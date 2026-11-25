@@ -45,3 +45,5 @@ desktop.ini
 *.key
 *.pem
 secrets.json
+# sync state (local only)
+names/.sync_state.json
