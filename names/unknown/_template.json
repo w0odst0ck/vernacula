@@ -1,0 +1,14 @@
+{
+  "schema": "unknown/1.0",
+  "book": "书名",
+  "note": "表外角色注册层。policy=translit 参与替换；policy=keep 保留原文（默认，零风险）。",
+  "characters": [
+    {
+      "origin": "正文原形",
+      "hanhua": "汉化名",
+      "role": "人物说明",
+      "policy": "keep",
+      "variants": []
+    }
+  ]
+}

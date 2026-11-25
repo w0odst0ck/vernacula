@@ -1,0 +1,47 @@
+# ---- 小说正文（版权内容，绝不入库）----
+*.txt
+!requirements.txt
+
+# ---- 生成的成品 ----
+output/
+_archive/
+
+# ---- 映射数据（含原著角色名，本地保留）----
+names/maps/*.json
+!names/maps/_template.json
+names/drift/*.json
+names/engine/*.json
+names/unknown/*.json
+names/protect/*.json
+
+# 保留模板
+!names/**/_template.json
+!names/**/_manifest.json
+
+# ---- Excel / 归档 ----
+*.xlsx
+*.xls
+*.bak
+*.zip
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+
+# ---- 编辑器 / 系统 ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- 密钥（双保险）----
+.env
+.env.*
+*.key
+*.pem
+secrets.json

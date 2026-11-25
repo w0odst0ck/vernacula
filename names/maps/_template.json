@@ -1,0 +1,45 @@
+{
+  "schema_version": "3.0",
+  "book": {
+    "id": "book-slug",
+    "title": "书名",
+    "sheet": "书名",
+    "source": "来源说明"
+  },
+  "groups": [
+    {
+      "index": 1,
+      "title": "一、主要人物",
+      "characters": [
+        {
+          "origin": "罗季昂·罗曼诺维奇·拉斯科利尼科夫",
+          "hanhua": "罗景行",
+          "note": "主人公。备注里可用：昵称\"景行\"，即罗佳",
+          "forms": {
+            "origin_parts": ["罗季昂", "罗曼诺维奇", "拉斯科利尼科夫"],
+            "origin_inner": [],
+            "aka": ["罗佳"],
+            "nickname": [],
+            "petname": [],
+            "intimate": [],
+            "alias": []
+          }
+        },
+        {
+          "origin": "索菲娅·谢苗诺芙娜",
+          "hanhua": "苏婉宁",
+          "note": "昵称\"婉宁\"，即索尼娅",
+          "forms": {
+            "origin_parts": ["索菲娅", "谢苗诺芙娜"],
+            "origin_inner": [],
+            "aka": ["索尼娅"],
+            "nickname": [],
+            "petname": [],
+            "intimate": [],
+            "alias": []
+          }
+        }
+      ]
+    }
+  ]
+}
