@@ -1,203 +1,233 @@
-# Vernacula · 乡土
+# Vernacula
 
-> 把外国小说里的人名，换成本土的名字。
-> 读起来，像一本本国的小说。
+**Localize foreign character names in fiction.**
 
-**Rename the foreign. Keep the story.**
+Read a Russian novel without losing track of who's who.
+
+[中文说明](README.zh-CN.md)
+
+```
+Родион Романович Раскольников  →  罗景行
+Raskolnikov                    →  罗景行
+Rodion                         →  罗景行
+Rodya                          →  景行
+```
+
+Same person. Native name. Original text untouched.
 
 ---
 
-## 这是什么
+## Why
 
-读外国小说时，一长串音译人名会把阅读切碎。
+Long transliterated names break reading flow:
 
-`罗季昂·罗曼诺维奇·拉斯科利尼科夫`、`阿格拉菲娜·亚历山德罗夫娜·斯维特洛娃`——
-读到第三章，已经忘了谁是谁。
+> *Rodion Romanovich Raskolnikov*, *Arkady Ivanovich Svidrigailov*,
+> *Pulcheria Alexandrovna* — by chapter three you've lost track.
 
-**Vernacula** 把这些人名换成本土名字，原文其他部分一字不动：
-
-```
-罗季昂·罗曼诺维奇·拉斯科利尼科夫  →  罗景行
-罗佳                              →  景行
-索尼娅                            →  婉宁
-```
-
-读起来，像一本本国的小说。
+Vernacula swaps just the names. Everything else — places, institutions,
+author names — stays exactly as written.
 
 ---
 
-## 设计原则
+## Design principles
 
-### 1. 只动人名，不动别的
+### Only names change
 
-地名、机构、作者名一律保留。`彼得堡` 不会被改成别的。
+`Petersburg` stays `Petersburg`. So do institutions, streets, and authors.
 
-### 2. 语域对语域，不做归一化
+### Register for register
 
-中文对同一个人也有多种叫法——正式场合称本名，亲友叫小名，长辈叫乳名。
+Chinese has multiple ways to address one person — formal given name,
+familiar nickname, childhood pet name. Vernacula preserves that layering
+instead of collapsing everything into one string.
 
-所以：
-
-| 原文 | 语域 | 汉化 |
+| Original | Register | Localized |
 |---|---|---|
-| 拉斯科利尼科夫 | 姓（叙述/正式） | 罗景行 |
-| 罗季昂 | 本名 | 罗景行 |
-| 罗佳 | 昵称 | 景行 |
-| 罗季卡 | 爱称 | 小景 |
+| Raskolnikov | surname (formal/narrative) | 罗景行 |
+| Rodion | given name | 罗景行 |
+| Rodya | nickname | 景行 |
+| Rodechka | affectionate | 小景 |
 
-不强行统一成一个名字。每个称呼有它的位置。
+### Patronymics dissolve
 
-### 3. 父称消解
+Russian names are `given · patronymic · surname`. Chinese has no patronymic.
 
-俄式姓名 `名·父称·姓` 三段式，在中文里读起来很累。
-
-Vernacula 把整个姓名串识别为一个结构，父称随全名一起消解：
+The engine parses the whole name string as a structure and collapses it:
 
 ```
-罗季昂·罗曼诺维奇·拉斯科利尼科夫  →  罗景行
+Rodion Romanovich Raskolnikov  →  罗景行
 ```
 
-而不是逐词硬替换。
+Not word-by-word substitution.
 
-### 4. 不确定就不换
+### When unsure, keep the original
 
-未注册的人名保留原文。宁可少汉化，不可换错人。
+Unregistered names pass through untouched. Better to under-localize than
+to swap the wrong person.
 
-### 5. 逐章迭代
+### Chapter by chapter
 
-不是一次跑完全本。
+Not one batch run over a whole book.
 
-一章节一章节来：跑一章 → 读一章 → 给反馈 → 修规则 → 下一章。
-
-词库和规则在阅读过程中长出来，而不是预先设计完。
+Translate a chapter → read it → give feedback → refine the lexicon →
+next chapter. The rules grow from reading, not from upfront design.
 
 ---
 
-## 现状
+## Status
 
-**早期开发中。** 已跑通的能力：
+**Early development.** Working today:
 
-- 全名结构识别与父称消解
-- 姓名分隔符兼容（`·` / `-` / 空格）
-- 译名漂移适配（同一译本不同译法）
-- 专名保护（防止地名被误伤）
-- 章级切分与按章标注
+- Full-name structure parsing and patronymic dissolution
+- Separator tolerance (`·` / `-` / whitespace)
+- Transliteration drift adaptation (spelling variants across editions)
+- Proper-noun protection (place names won't be mangled)
+- Chapter segmentation and per-chapter annotation
 
-**进行中**：
+**In progress:**
 
-- 章级流水线（逐章迭代）
-- 人名解析机（结构识别，替代字面匹配）
-- 交互式反馈工作流
+- Chapter-level pipeline with iterative review
+- Structural name parser (replacing literal matching)
+- Interactive feedback workflow
 
 ---
 
-## 快速开始
+## Quick start
 
 ```bash
 git clone https://github.com/w0odst0ck/vernacula.git
 cd vernacula
 ```
 
-需要 Python 3.9+，无第三方依赖。
+Python 3.9+, no third-party dependencies.
 
-### 准备你的映射
+### Define your mapping
 
 ```bash
-cp names/maps/_template.json names/maps/你的书名.json
+cp names/maps/_template.json names/maps/yourbook.json
 ```
-
-映射文件结构：
 
 ```json
 {
-  "book": { "title": "书名" },
+  "book": { "title": "Crime and Punishment" },
   "characters": [
     {
       "hanhua": "罗景行",
-      "role": "主人公",
+      "role": "protagonist",
       "localize": {
         "full": "罗景行",
         "surname": "罗",
         "nickname": "景行"
       },
       "forms": {
-        "surname": ["拉斯科利尼科夫"],
-        "given": ["罗季昂"],
-        "nickname": ["罗佳"]
+        "surname": ["Raskolnikov"],
+        "given": ["Rodion"],
+        "nickname": ["Rodya"]
       }
     }
   ]
 }
 ```
 
-| 字段 | 含义 |
+| Field | Meaning |
 |---|---|
-| `localize` | 中文各形态（全名/姓/名/昵称/爱称） |
-| `forms` | 原文各形态（姓/本名/父称/昵称） |
+| `localize` | Chinese forms (full / surname / given / nickname) |
+| `forms` | Source-language forms (surname / given / patronymic / nickname) |
 
-### 运行
+### Run
 
 ```bash
-# 生成引擎配置
-python tools/build_engine.py
-
-# 输出成品
-python tools/run_all.py --skip-sync
+python tools/build_engine.py       # mapping → engine config
+python tools/run_all.py --skip-sync # render output
 ```
 
 ---
 
-## 目录结构
+## Layout
 
 ```
 vernacula/
-├─ localize_names.py      人名替换引擎
+├─ localize_names.py      name localization engine
 ├─ tools/
-│  ├─ build_engine.py     映射 → 引擎配置
-│  ├─ drift.py            译名漂移探测
-│  ├─ protect.py          专名误伤探测
-│  ├─ unknown.py          表外角色探测
-│  └─ run_all.py          批量出成品
+│  ├─ build_engine.py     mapping → engine config
+│  ├─ drift.py            transliteration drift detection
+│  ├─ protect.py          proper-noun damage detection
+│  ├─ unknown.py          unregistered character discovery
+│  └─ run_all.py          batch rendering
 └─ names/
-   ├─ maps/               人名映射（主要角色）
-   ├─ drift/              译名漂移（不同译本用字差异）
-   ├─ protect/            专名保护（地名、作者名）
-   ├─ unknown/            表外角色注册
-   └─ engine/             引擎配置（自动生成）
+   ├─ maps/               character mappings
+   ├─ drift/              spelling variants across editions
+   ├─ protect/            place names and author names
+   ├─ unknown/            minor characters found while reading
+   └─ engine/             generated engine config
 ```
 
-### 四层分离
+### Four independent layers
 
-| 层 | 职责 | 何时改 |
+| Layer | Responsibility | When to edit |
 |---|---|---|
-| **映射层** | 人物是谁、叫什么 | 新增人物、改名字 |
-| **漂移层** | 同一人不同译本的用字差异 | 换一个版次的正文时 |
-| **保护层** | 含人名的地名、作者名 | 发现误伤时 |
-| **注册层** | 表外小配角 | 阅读中遇到新角色时 |
+| **maps** | Who is who, what they're called | New character, rename |
+| **drift** | Spelling differences across editions | Switching to a different edition |
+| **protect** | Place names, author names | When damage is detected |
+| **unknown** | Minor characters | When you meet one while reading |
 
-各层独立。换版次只改漂移层，发现误伤只改保护层。
-
----
-
-## 关于版权
-
-**本项目不包含任何小说原文。**
-
-使用者需要自己准备合法获得的文本文件。
-
-映射文件中的角色名列表属于事实性数据（人物称谓），不包含作品正文。
+Each layer is independent. Swap editions → edit drift only.
+Find damage → edit protect only.
 
 ---
 
-## 名字的由来
+## Copyright
 
-**vernacula**（拉丁语）— 本地的、家生的
-**vernacular** — 本国语、方言、土语
+**This project contains no novel text.**
 
-把不属于这里的名字，变成这里的。
+You supply your own legally obtained source files.
+
+Character-name mappings are factual data (forms of address) and contain no
+prose from the works themselves.
+
+---
+
+## The name
+
+**vernacula** (Latin) — native, home-born
+**vernacular** — the language of one's own country
+
+*Make names that don't belong here belong.*
 
 ---
 
 ## License
 
-MIT
+MIT — see [LICENSE](LICENSE).
+
+---
+
+<details>
+<summary>中文说明</summary>
+
+## 中文说明
+
+把外国小说里的人名，换成本土的名字。读起来，像一本本国的小说。
+
+完整中文文档：[README.zh-CN.md](README.zh-CN.md)
+
+**核心原则：**
+
+- 只动人名，地名、机构名、作者名一律保留
+- 语域对语域——正式称呼、昵称、爱称各有其位，不强行归一
+- 父称消解——俄式三段姓名整体识别，中文里合成一个名字
+- 不确定就不换——未注册的人名原样保留
+- 逐章迭代——读一章、改一章、长一章词库
+
+**四层分离：**
+
+| 层 | 职责 | 何时改 |
+|---|---|---|
+| maps | 人物是谁、叫什么 | 新增人物、改名 |
+| drift | 不同译本的用字差异 | 换版次时 |
+| protect | 含人名的地名、作者名 | 发现误伤时 |
+| unknown | 表外小配角 | 阅读中遇到时 |
+
+**不含任何小说原文。** 请自行准备合法获得的文本。
+
+</details>
